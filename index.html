@@ -8,11 +8,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.min.js"></script>
   </head>
   <body>
-    <a-assets>
-      <a-mixin id="link" scale="1 0.5 1"></a-mixin>
-      <a-mixin id="link-hovered" scale="2 2 1"></a-mixin>
+<!--     <a-assets>
+      <a-mixin id="link" scale="1 1 1"></a-mixin>
+      <a-mixin id="link-hovered" scale="1 0.2 1"></a-mixin>
       <a-mixin id="link-selected" scale="2 4 1"></a-mixin>
-    </a-assets>
+    </a-assets> -->
     <a-scene fog="type: exponential; color: #ffffff; far: 30; near: 0">
 
       <!-- <a-cube></a-cube> -->
@@ -23,9 +23,9 @@
 
     </a-scene>
     <script>
-      var data=[10, 10, 10, 10, 10, 10, 10, 10]
+      var data=[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
       var tip = -0.5;
-      var radius = 4;
+      var radius = 6;
       var scene = d3.select("a-scene")
       scene.append("a-camera")
            .attr({
@@ -44,7 +44,7 @@
                   .attr({
                     mixin: "link",
                     material: "color: #7BC8A4",
-                    geometry: "primitive: box; width: 1; height: 1; depth: 1",
+                    geometry: "primitive: box; width: 2; height: 2; depth: 2",
                     position: function(d, i){
                       var theta = (i / data.length) * (2 * Math.PI);
                       var x = radius * Math.cos(theta); 
@@ -59,14 +59,36 @@
                       return x + " " + y + " " + z
                     }
                   })
-    // cubes.append("a-mouseenter")
-    //      .attr({
-    //         scale: "2 2 2"
-    //      })
-    // cubes.append("a-mouseleave")
-    //      .attr({
-    //         scale: "1 1 1"
-    //      })
+    cubes.append("a-mouseenter")
+         .attr({
+            // scale: "1 2 1",
+            position: "0 10 0"
+         })
+    cubes.append("a-mouseleave")
+         .attr({
+            // scale: "1 1 1"
+            position: "0 10 0"
+         })
+
+      var images = scene.selectAll("a-image").data(data)
+                  .enter()
+                  .append("a-image")
+                  .attr({
+                    src: 'queen.jpeg',
+                    position: function(d, i){
+                      var theta = (i / data.length) * (2 * Math.PI);
+                      var x = radius * Math.cos(theta); 
+                      var y = 0;
+                      var z = radius * Math.sin(theta);
+                      return x + " " + y + " " + z
+                    },
+                    rotation: function(d, i){
+                      var x = 100*Math.atan(tip/radius);
+                      var y = -360 * i/data.length + 90;
+                      var z = 0;
+                      return x + " " + y + " " + z
+                    }
+                  })
 
 
     </script>
