@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Hello, World! • A-Frame</title>
+    <title>My World</title>
     <meta name="description" content="Hello, World! • A-Frame">
     <script src="https://aframe.io/releases/latest/aframe.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.min.js"></script>
@@ -13,13 +13,17 @@
       <a-mixin id="link-hovered" scale="1 0.2 1"></a-mixin>
       <a-mixin id="link-selected" scale="2 4 1"></a-mixin>
     </a-assets> -->
-    <a-scene fog="type: exponential; color: #ffffff; far: 30; near: 0">
-
+    <a-assets>
+      <a-mixin id="red" material="color: red"></a-mixin>
+    </a-assets>
+    <!-- <a-scene fog="type: linear; color: #ffffff; far: 30; near: 0"> -->
+    <a-scene>
       <!-- <a-cube></a-cube> -->
       <a-entity camera look-controls wasd-controls></a-entity>
       <a-entity light="type: point; color: #EEE; intensity: 0.5" position="0 3 0"></a-entity>
       <a-light color="#da47da" position="0 0 0" type="ambient"></a-light>
-      <a-sky color="#c8f8e0"></a-sky>
+      <!-- <a-sky color="#c8f8e0"></a-sky> -->
+      <a-sky src="australia.jpg"></a-sky>
 
     </a-scene>
     <script>
@@ -42,7 +46,7 @@
                   .append("a-entity")
                   .classed("bar", true)
                   .attr({
-                    mixin: "link",
+                    // mixin: "link",
                     material: "color: #7BC8A4",
                     geometry: "primitive: box; width: 2; height: 2; depth: 2",
                     position: function(d, i){
@@ -62,13 +66,16 @@
     cubes.append("a-mouseenter")
          .attr({
             // scale: "1 2 1",
-            position: "0 10 0"
+            position: "0 2 0",
+            visible: false
          })
     cubes.append("a-mouseleave")
          .attr({
-            // scale: "1 1 1"
-            position: "0 10 0"
+            scale: "1 1 1"
+            // position: "0 2 0"
+            // visible: true
          })
+      
 
       var images = scene.selectAll("a-image").data(data)
                   .enter()
