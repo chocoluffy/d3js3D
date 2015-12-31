@@ -18,16 +18,39 @@
     </a-assets>
     <!-- <a-scene fog="type: linear; color: #ffffff; far: 30; near: 0"> -->
     <a-scene>
-      <!-- <a-cube></a-cube> -->
-      <a-entity camera look-controls wasd-controls></a-entity>
+      
+      <!-- <a-entity camera look-controls wasd-controls></a-entity> -->
+
+      <a-entity camera look-controls="enabled: true" wasd-controls="enabled: false">   <a-entity position="0 0 0" geometry="primitive: ring; radiusOuter: 0.010; radiusInner: 0.007" material="color: #4CC3D9; shader: flat; transparent: true; opacity: 0.5" cursor="fuse: true; maxDistance: 500; timeout: 1000"></a-entity> </a-entity>
+
       <a-entity light="type: point; color: #EEE; intensity: 0.5" position="0 3 0"></a-entity>
       <a-light color="#da47da" position="0 0 0" type="ambient"></a-light>
       <!-- <a-sky color="#c8f8e0"></a-sky> -->
       <a-sky src="road.jpg"></a-sky>
+<!--       <a-entity id="river" geometry="primitive: plane" material="color: blue"
+          position="0 0 2" sound="src: background.mp3; autoplay: true"></a-entity> -->
+      <a-entity id="sub" position="3 0 -10" rotation="0 0 0" material:"color: #7BCBCF" src="texture.jpg" geometry="primitive: box; width: 2; height: 2; depth: 2">
+      </a-entity>
+
+      <a-entity id="main"></a-entity> 
+      <!-- to wrap all a-entity box, having a parent click eventlistener. -->
 
     </a-scene>
     <script>
-      var data=[10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+
+      function shuffleArray(array) {
+          for (var i = array.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var temp = array[i];
+              array[i] = array[j];
+              array[j] = temp;
+          }
+          return array;
+      }
+
+      var data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+      var data = shuffleArray(data);
+      // console.log(data);
       var tip = -0.5;
       var radius = 6;
       var scene = d3.select("a-scene")
@@ -41,7 +64,9 @@
             }
            })
 
-      var cubes = scene.selectAll("a-entity.bar").data(data)
+      var main = d3.select("#main")
+
+      var cubes = main.selectAll("a-entity.bar").data(data)
                   .enter()
                   .append("a-entity")
                   .classed("bar", true)
@@ -63,25 +88,41 @@
                       return x + " " + y + " " + z
                     }
                   })
-    cubes.append("a-mouseenter")
-         .attr({
-            // scale: "1 2 1",
-            position: "0 2 0",
-            visible: false
-         })
-    cubes.append("a-mouseleave")
-         .attr({
-            scale: "1 1 1"
-            // position: "0 2 0"
-            // visible: true
-         })
+
+      var theParent = document.querySelector('#main');
+      theParent.addEventListener('click', function(e){
+          console.log("children got clicked!");
+
+          var animenode = document.createElement("a-animation");
+          animenode.setAttribute("attribute", "rotation");
+          animenode.setAttribute("to", "0 360 0");
+          animenode.setAttribute("dur", "3000");
+          animenode.setAttribute("fill", "forwards");
+          animenode.setAttribute("repeat", "false");
+
+          var animenode2 = document.createElement("a-animation");
+          animenode2.setAttribute("attribute", "position");
+          animenode2.setAttribute("to", "0 0 0");
+          animenode2.setAttribute("dur", "3000");
+          animenode2.setAttribute("fill", "forwards");
+          animenode2.setAttribute("repeat", "false");
+
+          e.target.appendChild(animenode);
+          e.target.appendChild(animenode2);
+          e.stopPropagation();
+      }, false);
       
 
       var images = scene.selectAll("a-image").data(data)
                   .enter()
                   .append("a-image")
                   .attr({
-                    src: 'queen.jpeg',
+                    // src: 'queen.jpeg',
+                    opacity: "1",
+                    src: function(d, i){
+                      var str = 'img/img';
+                      return str + d + '.JPG'
+                    },
                     position: function(d, i){
                       var theta = (i / data.length) * (2 * Math.PI);
                       var x = radius * Math.cos(theta); 
@@ -91,11 +132,39 @@
                     },
                     rotation: function(d, i){
                       var x = 100*Math.atan(tip/radius);
-                      var y = -360 * i/data.length + 90;
+                      var y = -360 * i/data.length + 90 + 180;
                       var z = 0;
                       return x + " " + y + " " + z
                     }
                   })
+
+
+
+      var box = document.querySelector('#sub');
+
+      var boxclicked = 0;
+      box.addEventListener('click', function(){
+          if(boxclicked%2==0){
+            var animenode = document.createElement("a-animation");
+            animenode.setAttribute("attribute", "rotation");
+            animenode.setAttribute("to", "0 360 0");
+            animenode.setAttribute("dur", "1000");
+            animenode.setAttribute("fill", "forwards");
+            animenode.setAttribute("repeat", "false");
+            box.appendChild(animenode);
+            console.log("Added the animenode");
+            boxclicked += 1;
+          }else{
+            while (box.firstChild) {
+              box.removeChild(box.firstChild);
+            }
+            console.log("Deleted the animenode");
+            boxclicked += 1;
+          }
+      });
+
+
+
 
 
     </script>
