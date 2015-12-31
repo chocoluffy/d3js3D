@@ -21,10 +21,10 @@
       
       <!-- <a-entity camera look-controls wasd-controls></a-entity> -->
 
-      <a-entity camera look-controls="enabled: true" wasd-controls="enabled: false">   <a-entity position="0 0 0" geometry="primitive: ring; radiusOuter: 0.010; radiusInner: 0.007" material="color: #4CC3D9; shader: flat; transparent: true; opacity: 0.5" cursor="fuse: true; maxDistance: 500; timeout: 1000"></a-entity> </a-entity>
+      <a-entity camera look-controls="enabled: true" wasd-controls="enabled: false">   <a-entity position="0 -1 0" geometry="primitive: ring; radiusOuter: 0.010; radiusInner: 0.007" material="color: #4CC3D9; shader: flat; transparent: true; opacity: 0.5" cursor="fuse: true; maxDistance: 500; timeout: 1000"></a-entity> </a-entity>
 
-      <a-entity light="type: point; color: #EEE; intensity: 0.5" position="0 3 0"></a-entity>
-      <a-light color="#da47da" position="0 0 0" type="ambient"></a-light>
+      <a-entity light="type: ambient; color: #fff; intensity: 10" position="0 3 0"></a-entity>
+      <!-- <a-light color="#fff" position="0 0 0" type="ambient"></a-light> -->
       <!-- <a-sky color="#c8f8e0"></a-sky> -->
       <a-sky src="road.jpg"></a-sky>
 <!--       <a-entity id="river" geometry="primitive: plane" material="color: blue"
@@ -34,6 +34,8 @@
 
       <a-entity id="main"></a-entity> 
       <!-- to wrap all a-entity box, having a parent click eventlistener. -->
+
+      <a-entity id="meteor"></a-entity>
 
     </a-scene>
     <script>
@@ -48,7 +50,11 @@
           return array;
       }
 
-      var data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+      var meteor = [100, 80, 90, 100, 70, 90];
+      var meteorRadius = 20;
+
+
+      var data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
       var data = shuffleArray(data);
       // console.log(data);
       var tip = -0.5;
@@ -64,7 +70,42 @@
             }
            })
 
-      var main = d3.select("#main")
+      var main = d3.select("#main");
+      var meteorContainer = d3.select("#meteor");
+
+
+      var meteors = meteorContainer.selectAll("a-cube").data(meteor)
+                  .enter()
+                  .append("a-cube")
+                  .attr({
+                    color: "#fff",
+                    position: function(d, i){
+                      var theta = (i / data.length) * (2 * Math.PI);
+                      var x = meteorRadius * Math.cos(theta); 
+                      var y = d;
+                      var z = meteorRadius * Math.sin(theta);
+                      return x + " " + y + " " + z
+                    },
+                    rotation: function(d, i){
+                      var x = 0;
+                      var y = -360 * i/data.length;
+                      var z = 0;
+                      return x + " " + y + " " + z
+                    },
+                    width: 30,
+                    height: 30,
+                    depth: 30,
+                    src: function(d, i){
+                      return "meteor/" + i + ".jpg"
+                    },
+                  })
+
+      meteors.append("a-root")
+            .append("a-entity")
+            .attr({
+              geometry: "primitive: cube; segmentsWidth: 10; segmentsHeight: 10;",
+              material: "color:#fff; src: texture.jpg;"
+            })
 
       var cubes = main.selectAll("a-entity.bar").data(data)
                   .enter()
@@ -72,8 +113,12 @@
                   .classed("bar", true)
                   .attr({
                     // mixin: "link",
-                    material: "color: #7BC8A4",
-                    geometry: "primitive: box; width: 2; height: 2; depth: 2",
+                    flag: function(d, i){
+                      return i
+                    },
+                    src: "bomb.png",
+                    // material: "color: #7BC8A4",
+                    geometry: "primitive: box; width: 2; height: 2; depth: 2;",
                     position: function(d, i){
                       var theta = (i / data.length) * (2 * Math.PI);
                       var x = radius * Math.cos(theta); 
@@ -89,7 +134,16 @@
                     }
                   })
 
+      cubes.append("a-root")
+          .append("a-entity")
+          .attr({
+            geometry: "primitive: box; width: 2; height: 2; depth: 2;",
+            material: "color; src: url(bomb.png);"
+          })
+
       var theParent = document.querySelector('#main');
+      var meteorParent = document.querySelector("meteor");
+
       theParent.addEventListener('click', function(e){
           console.log("children got clicked!");
 
@@ -109,7 +163,25 @@
 
           e.target.appendChild(animenode);
           e.target.appendChild(animenode2);
+          // console.log(e.target.getAttribute("flag"));
           e.stopPropagation();
+
+          var animenode3 = document.createElement("a-animation");
+          animenode3.setAttribute("attribute", "rotation");
+          animenode3.setAttribute("to", "0 360 0");
+          animenode3.setAttribute("dur", "3000");
+          animenode3.setAttribute("fill", "forwards");
+          animenode3.setAttribute("repeat", "false");
+
+          var animenode4 = document.createElement("a-animation");
+          animenode4.setAttribute("attribute", "position");
+          animenode4.setAttribute("to", "0 0 0");
+          animenode4.setAttribute("dur", "3000");
+          animenode4.setAttribute("fill", "forwards");
+          animenode4.setAttribute("repeat", "false");
+
+
+
       }, false);
       
 
