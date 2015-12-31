@@ -50,8 +50,9 @@
           return array;
       }
 
-      var meteor = [100, 80, 90, 100, 70, 90];
-      var meteorRadius = 20;
+      var meteor = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      var meteor = shuffleArray(meteor);
+      var meteorRadius = 40;
 
 
       var data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -79,10 +80,11 @@
                   .append("a-cube")
                   .attr({
                     color: "#fff",
+                    visible: "false",
                     position: function(d, i){
-                      var theta = (i / data.length) * (2 * Math.PI);
+                      var theta = (i / meteor.length) * (2 * Math.PI);
                       var x = meteorRadius * Math.cos(theta); 
-                      var y = d;
+                      var y = 80;
                       var z = meteorRadius * Math.sin(theta);
                       return x + " " + y + " " + z
                     },
@@ -96,7 +98,7 @@
                     height: 30,
                     depth: 30,
                     src: function(d, i){
-                      return "meteor/" + i + ".jpg"
+                      return "meteor/" + d + ".jpg"
                     },
                   })
 
@@ -142,7 +144,7 @@
           })
 
       var theParent = document.querySelector('#main');
-      var meteorParent = document.querySelector("meteor");
+      var meteorParent = document.querySelector("#meteor");
 
       theParent.addEventListener('click', function(e){
           console.log("children got clicked!");
@@ -166,21 +168,34 @@
           // console.log(e.target.getAttribute("flag"));
           e.stopPropagation();
 
+          
+          
+          
+
+          targetID = e.target.getAttribute("flag");
+          var meteorTheta = (targetID / meteor.length) * (2 * Math.PI);
+          var x = meteorRadius * Math.cos(meteorTheta); 
+          var z = meteorRadius * Math.sin(meteorTheta);
+
           var animenode3 = document.createElement("a-animation");
           animenode3.setAttribute("attribute", "rotation");
           animenode3.setAttribute("to", "0 360 0");
-          animenode3.setAttribute("dur", "3000");
+          animenode3.setAttribute("dur", "60000");
           animenode3.setAttribute("fill", "forwards");
           animenode3.setAttribute("repeat", "false");
 
           var animenode4 = document.createElement("a-animation");
           animenode4.setAttribute("attribute", "position");
-          animenode4.setAttribute("to", "0 0 0");
-          animenode4.setAttribute("dur", "3000");
+          animenode4.setAttribute("to", x + " -50 " + z);
+          animenode4.setAttribute("dur", "60000");
           animenode4.setAttribute("fill", "forwards");
           animenode4.setAttribute("repeat", "false");
 
-          // meteorParent.children
+          // console.log(parseInt(e.target.getAttribute("flag"));
+          meteorParent.childNodes[targetID].setAttribute('visible', 'true');
+          meteorParent.childNodes[targetID].appendChild(animenode3);
+          meteorParent.childNodes[targetID].appendChild(animenode4);
+          e.stopPropagation();
 
       }, false);
       
