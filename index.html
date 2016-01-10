@@ -17,7 +17,7 @@
       <a-mixin id="red" material="color: red"></a-mixin>
     </a-assets>
     <!-- <a-scene fog="type: linear; color: #ffffff; far: 30; near: 0"> -->
-    <a-scene>
+    <a-scene id="scene">
       
       <!-- <a-entity camera look-controls wasd-controls></a-entity> -->
 
@@ -36,6 +36,8 @@
       <!-- to wrap all a-entity box, having a parent click eventlistener. -->
 
       <a-entity id="meteor"></a-entity>
+
+      <!-- <a-video id="video" src="example.mp4" width="320" height="180" position="0 0 -200"></a-video> -->
 
     </a-scene>
     <script>
@@ -226,32 +228,23 @@
                   })
 
 
-
       var box = document.querySelector('#sub');
 
-      var boxclicked = 0;
+      var boxclicked = false;
       box.addEventListener('click', function(){
-          if(boxclicked%2==0){
-            var animenode = document.createElement("a-animation");
-            animenode.setAttribute("attribute", "rotation");
-            animenode.setAttribute("to", "0 360 0");
-            animenode.setAttribute("dur", "1000");
-            animenode.setAttribute("fill", "forwards");
-            animenode.setAttribute("repeat", "false");
-            box.appendChild(animenode);
-            console.log("Added the animenode");
-            boxclicked += 1;
-          }else{
-            while (box.firstChild) {
-              box.removeChild(box.firstChild);
-            }
-            console.log("Deleted the animenode");
-            boxclicked += 1;
-          }
+        if(!boxclicked){
+          var video = document.createElement("a-video");
+          video.setAttribute("src", "example.mp4");
+          video.setAttribute("width", "480");
+          video.setAttribute("height", "270");
+          video.setAttribute("position", "0 0 -200");
+          var scene = document.querySelector("#scene");
+          scene.appendChild(video);
+        }
       });
 
 
-
+// <a-video src="example.mp4" width="320" height="180" position="0 0 -200"></a-video>
 
 
     </script>
