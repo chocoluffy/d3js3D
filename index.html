@@ -29,23 +29,14 @@
       <a-sky src="road.jpg"></a-sky>
 <!--       <a-entity id="river" geometry="primitive: plane" material="color: blue"
           position="0 0 2" sound="src: background.mp3; autoplay: true"></a-entity> -->
-<<<<<<< HEAD
-      <a-entity id="sub" position="2 0 10" rotation="0 0 0" material:"color: #7BCBCF" src="texture.jpg" geometry="primitive: box; width: 2; height: 2; depth: 2">
-=======
+
       <a-entity id="sub" position="3 0 -10" rotation="0 0 0" material:"color: #7BCBCF" src="texture.jpg" geometry="primitive: box; width: 2; height: 2; depth: 2">
->>>>>>> 3795934ea6337593f4bdc633789501cff7a42039
       </a-entity>
 
       <a-entity id="main"></a-entity> 
       <!-- to wrap all a-entity box, having a parent click eventlistener. -->
 
       <a-entity id="meteor"></a-entity>
-
-<<<<<<< HEAD
-      <!-- <a-video id="video" src="final-lowest.mp4" width="320" height="180" position="0 0 -200"></a-video> -->
-=======
-      <!-- <a-video id="video" src="example.mp4" width="320" height="180" position="0 0 -200"></a-video> -->
->>>>>>> 3795934ea6337593f4bdc633789501cff7a42039
 
     </a-scene>
     <script>
@@ -240,17 +231,8 @@
 
       var boxclicked = false;
       box.addEventListener('click', function(){
-<<<<<<< HEAD
-
-        boxclicked = true;
-        console.log(boxclicked);
-        if(boxclicked){
-          var video = document.createElement("a-video");
-          // video.setAttribute("src", "final-lowest.mp4");
-=======
         if(!boxclicked){
           var video = document.createElement("a-video");
->>>>>>> 3795934ea6337593f4bdc633789501cff7a42039
           video.setAttribute("src", "example.mp4");
           video.setAttribute("width", "480");
           video.setAttribute("height", "270");
@@ -260,13 +242,6 @@
         }
       });
 
-
-<<<<<<< HEAD
-=======
-// <a-video src="example.mp4" width="320" height="180" position="0 0 -200"></a-video>
-
-
->>>>>>> 3795934ea6337593f4bdc633789501cff7a42039
     </script>
   </body>
 </html>
