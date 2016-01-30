@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My World</title>
+    <meta name="description" content="D3js in 3D - javascript">
+    <script src="https://aframe.io/releases/latest/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.min.js"></script>
+  </head>
+  <body>
+<!--     <a-assets>
+      <a-mixin id="link" scale="1 1 1"></a-mixin>
+      <a-mixin id="link-hovered" scale="1 0.2 1"></a-mixin>
+      <a-mixin id="link-selected" scale="2 4 1"></a-mixin>
+    </a-assets> -->
+    <a-assets>
+      <a-mixin id="red" material="color: red"></a-mixin>
+    </a-assets>
+    <!-- <a-scene fog="type: linear; color: #ffffff; far: 30; near: 0"> -->
+    <a-scene id="scene">
+      
+      <!-- <a-entity camera look-controls wasd-controls></a-entity> -->
+
+      <a-entity camera look-controls="enabled: true" wasd-controls="enabled: false">   <a-entity position="0 -1 0" geometry="primitive: ring; radiusOuter: 0.010; radiusInner: 0.007" material="color: #4CC3D9; shader: flat; transparent: true; opacity: 0.5" cursor="fuse: true; maxDistance: 500; timeout: 1000"></a-entity> </a-entity>
+
+      <a-entity light="type: ambient; color: #fff; intensity: 10" position="0 3 0"></a-entity>
+      <!-- <a-light color="#fff" position="0 0 0" type="ambient"></a-light> -->
+      <!-- <a-sky color="#c8f8e0"></a-sky> -->
+      <a-sky src="road.jpg"></a-sky>
+<!--       <a-entity id="river" geometry="primitive: plane" material="color: blue"
+          position="0 0 2" sound="src: background.mp3; autoplay: true"></a-entity> -->
+      <a-entity id="sub" position="2 0 10" rotation="0 0 0" material:"color: #7BCBCF" src="texture.jpg" geometry="primitive: box; width: 2; height: 2; depth: 2">
+      </a-entity>
+
+      <a-entity id="main"></a-entity> 
+      <!-- to wrap all a-entity box, having a parent click eventlistener. -->
+
+      <a-entity id="meteor"></a-entity>
+
+      <!-- <a-video id="video" src="final-lowest.mp4" width="320" height="180" position="0 0 -200"></a-video> -->
+
+    </a-scene>
+    <script>
+
+      function shuffleArray(array) {
+          for (var i = array.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var temp = array[i];
+              array[i] = array[j];
+              array[j] = temp;
+          }
+          return array;
+      }
+
+      var meteor = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      var meteor = shuffleArray(meteor);
+      var meteorRadius = 40;
+
+
+      var data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      var data = shuffleArray(data);
+      // console.log(data);
+      var tip = -0.5;
+      var radius = 6;
+      var scene = d3.select("a-scene")
+      scene.append("a-camera")
+           .attr({
+            position: function(){
+              var x = 0;
+              var y = tip;
+              var z = 0;
+              return x + " " + y + " " + z
+            }
+           })
+
+      var main = d3.select("#main");
+      var meteorContainer = d3.select("#meteor");
+
+
+      var meteors = meteorContainer.selectAll("a-cube").data(meteor)
+                  .enter()
+                  .append("a-cube")
+                  .attr({
+                    color: "#fff",
+                    visible: "false",
+                    position: function(d, i){
+                      var theta = (i / meteor.length) * (2 * Math.PI);
+                      var x = meteorRadius * Math.cos(theta); 
+                      var y = 80;
+                      var z = meteorRadius * Math.sin(theta);
+                      return x + " " + y + " " + z
+                    },
+                    rotation: function(d, i){
+                      var x = 0;
+                      var y = -360 * i/data.length;
+                      var z = 0;
+                      return x + " " + y + " " + z
+                    },
+                    width: 30,
+                    height: 30,
+                    depth: 30,
+                    src: function(d, i){
+                      return "meteor/" + d + ".jpg"
+                    },
+                  })
+
+      meteors.append("a-root")
+            .append("a-entity")
+            .attr({
+              geometry: "primitive: cube; segmentsWidth: 10; segmentsHeight: 10;",
+              material: "color:#fff; src: texture.jpg;"
+            })
+
+      var cubes = main.selectAll("a-entity.bar").data(data)
+                  .enter()
+                  .append("a-entity")
+                  .classed("bar", true)
+                  .attr({
+                    // mixin: "link",
+                    flag: function(d, i){
+                      return i
+                    },
+                    src: "bomb.png",
+                    // material: "color: #7BC8A4",
+                    geometry: "primitive: box; width: 2; height: 2; depth: 2;",
+                    position: function(d, i){
+                      var theta = (i / data.length) * (2 * Math.PI);
+                      var x = radius * Math.cos(theta); 
+                      var y = 0;
+                      var z = radius * Math.sin(theta);
+                      return x + " " + y + " " + z
+                    },
+                    rotation: function(d, i){
+                      var x = 0;
+                      var y = -360 * i/data.length;
+                      var z = -80*Math.atan(tip/radius);
+                      return x + " " + y + " " + z
+                    }
+                  })
+
+      cubes.append("a-root")
+          .append("a-entity")
+          .attr({
+            geometry: "primitive: box; width: 2; height: 2; depth: 2;",
+            material: "color; src: url(bomb.png);"
+          })
+
+      var theParent = document.querySelector('#main');
+      var meteorParent = document.querySelector("#meteor");
+
+      theParent.addEventListener('click', function(e){
+          console.log("children got clicked!");
+
+          var animenode = document.createElement("a-animation");
+          animenode.setAttribute("attribute", "rotation");
+          animenode.setAttribute("to", "0 360 0");
+          animenode.setAttribute("dur", "3000");
+          animenode.setAttribute("fill", "forwards");
+          animenode.setAttribute("repeat", "false");
+
+          var animenode2 = document.createElement("a-animation");
+          animenode2.setAttribute("attribute", "position");
+          animenode2.setAttribute("to", "0 0 0");
+          animenode2.setAttribute("dur", "3000");
+          animenode2.setAttribute("fill", "forwards");
+          animenode2.setAttribute("repeat", "false");
+
+          e.target.appendChild(animenode);
+          e.target.appendChild(animenode2);
+          // console.log(e.target.getAttribute("flag"));
+          e.stopPropagation();
+
+          
+          
+          
+
+          targetID = e.target.getAttribute("flag");
+          var meteorTheta = (targetID / meteor.length) * (2 * Math.PI);
+          var x = meteorRadius * Math.cos(meteorTheta); 
+          var z = meteorRadius * Math.sin(meteorTheta);
+
+          var animenode3 = document.createElement("a-animation");
+          animenode3.setAttribute("attribute", "rotation");
+          animenode3.setAttribute("to", "0 360 0");
+          animenode3.setAttribute("dur", "90000");
+          animenode3.setAttribute("fill", "forwards");
+          animenode3.setAttribute("repeat", "false");
+
+          var animenode4 = document.createElement("a-animation");
+          animenode4.setAttribute("attribute", "position");
+          animenode4.setAttribute("to", x + " -50 " + z);
+          animenode4.setAttribute("dur", "90000");
+          animenode4.setAttribute("fill", "forwards");
+          animenode4.setAttribute("repeat", "false");
+
+          // console.log(parseInt(e.target.getAttribute("flag"));
+          meteorParent.childNodes[targetID].setAttribute('visible', 'true');
+          meteorParent.childNodes[targetID].appendChild(animenode3);
+          meteorParent.childNodes[targetID].appendChild(animenode4);
+          e.stopPropagation();
+
+      }, false);
+      
+
+      var images = scene.selectAll("a-image").data(data)
+                  .enter()
+                  .append("a-image")
+                  .attr({
+                    // src: 'queen.jpeg',
+                    opacity: "1",
+                    src: function(d, i){
+                      var str = 'img/img';
+                      return str + d + '.JPG'
+                    },
+                    position: function(d, i){
+                      var theta = (i / data.length) * (2 * Math.PI);
+                      var x = radius * Math.cos(theta); 
+                      var y = 0;
+                      var z = radius * Math.sin(theta);
+                      return x + " " + y + " " + z
+                    },
+                    rotation: function(d, i){
+                      var x = 100*Math.atan(tip/radius);
+                      var y = -360 * i/data.length + 90 + 180;
+                      var z = 0;
+                      return x + " " + y + " " + z
+                    }
+                  })
+
+
+      var box = document.querySelector('#sub');
+
+      var boxclicked = false;
+      box.addEventListener('click', function(){
+
+        boxclicked = true;
+        console.log(boxclicked);
+        if(boxclicked){
+          var video = document.createElement("a-video");
+          // video.setAttribute("src", "final-lowest.mp4");
+          video.setAttribute("src", "example.mp4");
+          video.setAttribute("width", "480");
+          video.setAttribute("height", "270");
+          video.setAttribute("position", "0 0 -200");
+          var scene = document.querySelector("#scene");
+          scene.appendChild(video);
+        }
+      });
+
+
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
